@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Corte as Clip } from '../../entities/corte.entity';
 import { Video } from '../../entities/video.entity';
 import { Legenda as Subtitle } from '../../entities/legenda.entity';
@@ -31,6 +32,7 @@ export class ClipsService {
     private eventsGateway: EventsGateway,
     private tenantDb: TenantDbManager,
     private remotionRenderer: RemotionRendererService,
+    private readonly configService: ConfigService, // Injetar ConfigService
     @InjectQueue(CLIP_EXPORT_QUEUE) private exportQueue: Queue,
   ) { }
 
@@ -219,7 +221,7 @@ export class ClipsService {
       throw new NotFoundException('Video file not found. Please ensure the video is downloaded.');
     }
 
-    const envUploadDir = process.env.UPLOAD_DIR || 'uploads';
+    const envUploadDir = this.configService.get<string>('UPLOAD_DIR', 'uploads');
     const uploadDir = path.isAbsolute(envUploadDir)
       ? envUploadDir
       : path.resolve(process.cwd(), envUploadDir);

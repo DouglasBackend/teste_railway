@@ -16,7 +16,7 @@ export class TenantDbManager implements OnModuleDestroy {
   constructor(private configService: ConfigService) {}
 
   async getTenantDataSource(usuarioId: string): Promise<DataSource> {
-    const secret = process.env.SECRET_TENANT;
+    const secret = this.configService.get<string>('SECRET_TENANT', 'kurt_');
     const dbName = `${secret}${usuarioId.replace(/-/g, '_')}`;
 
     if (this.dataSources.has(dbName)) {
@@ -29,18 +29,13 @@ export class TenantDbManager implements OnModuleDestroy {
     }
 
     const initPromise = (async () => {
-      const host =
-        this.configService.get<string>('GLOBAL_DB_HOST') || 'localhost';
-      const port = this.configService.get<number>('GLOBAL_DB_PORT') || 5432;
-      const username =
-        this.configService.get<string>('GLOBAL_DB_USER') || 'postgres';
-      const password =
-        this.configService.get<string>('GLOBAL_DB_PASS') || 'postgres';
+      const host = this.configService.get<string>('GLOBAL_DB_HOST', 'aws-1-us-east-1.pooler.supabase.com');
+      const port = parseInt(this.configService.get<string>('GLOBAL_DB_PORT', '5432'));
+      const username = this.configService.get<string>('GLOBAL_DB_USER', 'postgres.pkjfuvoexlwigqjuzjmk');
+      const password = this.configService.get<string>('GLOBAL_DB_PASS', 'J98jPeSRKMJusHF@');
+      const isProd = this.configService.get('NODE_ENV') === 'production';
 
       // ── Auto-create tenant database if it doesn't exist ──────────────────
-      // Connect to the default 'postgres' admin database first, check if the
-      // tenant DB exists, and create it if not. This prevents the
-      // "database does not exist" error on first access for a new user.
       const adminDs = new DataSource({
         type: 'postgres',
         host,
@@ -48,6 +43,8 @@ export class TenantDbManager implements OnModuleDestroy {
         username,
         password,
         database: 'postgres',
+        ssl: isProd ? { rejectUnauthorized: false } : false,
+        extra: isProd ? { ssl: { rejectUnauthorized: false } } : {},
       });
 
       try {
@@ -57,9 +54,6 @@ export class TenantDbManager implements OnModuleDestroy {
           [dbName],
         );
         if (exists.length === 0) {
-          // Identifiers cannot be parameterised in PostgreSQL DDL — dbName is
-          // derived from SECRET_TENANT + uuid (alphanumeric + underscores only),
-          // so it is safe to interpolate directly.
           await adminDs.query(`CREATE DATABASE "${dbName}"`);
         }
       } finally {
@@ -74,7 +68,9 @@ export class TenantDbManager implements OnModuleDestroy {
         password,
         database: dbName,
         entities: [Projeto, Video, Corte, Legenda, ContaYoutube],
-        synchronize: true, // Auto-cria tabelas em dev
+        synchronize: true,
+        ssl: isProd ? { rejectUnauthorized: false } : false,
+        extra: isProd ? { ssl: { rejectUnauthorized: false } } : {},
       });
 
       await dataSource.initialize();

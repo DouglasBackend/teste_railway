@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { AssemblyAI } from "assemblyai";
 
 @Injectable()
@@ -6,8 +7,8 @@ export class TranscriptionService {
   private client: AssemblyAI;
   private readonly logger = new Logger(TranscriptionService.name);
 
-  constructor() {
-    this.client = new AssemblyAI({ apiKey: process.env.ASSEMBLYAI_API_KEY || "" });
+  constructor(private readonly configService: ConfigService) {
+    this.client = new AssemblyAI({ apiKey: this.configService.get<string>("ASSEMBLYAI_API_KEY", "") });
   }
 
   async transcribe(filePath: string): Promise<{
@@ -16,7 +17,7 @@ export class TranscriptionService {
     words: any[];
     sentences: any[];
   }> {
-    const langCode = process.env.TRANSCRIPTION_LANGUAGE || null;
+    const langCode = this.configService.get<string>("TRANSCRIPTION_LANGUAGE", "");
 
     try {
       const transcriptParams: any = {

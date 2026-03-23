@@ -20,7 +20,8 @@ export class YoutubeService {
     ) {
         const clientId = this.configService.get<string>('YOUTUBE_CLIENT_ID');
         const clientSecret = this.configService.get<string>('YOUTUBE_CLIENT_SECRET');
-        const redirectUri = this.configService.get<string>('YOUTUBE_REDIRECT_URI') || 'http://localhost:3001/api/youtube/callback';
+        const appUrl = this.configService.get<string>('APP_URL', 'http://localhost:3001');
+        const redirectUri = this.configService.get<string>('YOUTUBE_REDIRECT_URI') || `${appUrl}/api/youtube/callback`;
         this.oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
     }
 

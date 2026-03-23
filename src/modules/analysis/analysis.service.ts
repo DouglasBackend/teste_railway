@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import Groq from "groq-sdk";
 import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 
@@ -9,11 +10,11 @@ export class AnalysisService {
   private geminiModel: GenerativeModel;
   private readonly logger = new Logger(AnalysisService.name);
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     this.groq = new Groq({
-      apiKey: process.env.GROQ_API_KEY || "",
+      apiKey: this.configService.get<string>("GROQ_API_KEY", ""),
     });
-    this.gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+    this.gemini = new GoogleGenerativeAI(this.configService.get<string>("GEMINI_API_KEY", ""));
     this.geminiModel = this.gemini.getGenerativeModel({ model: "gemini-1.5-flash" });
   }
 
