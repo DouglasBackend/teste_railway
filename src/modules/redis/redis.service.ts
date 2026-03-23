@@ -11,9 +11,9 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   onModuleInit() {
     this.redisClient = new Redis({
-      host: this.configService.get('REDIS_HOST', 'localhost'),
+      host: this.configService.get('REDIS_HOST', 'enormous-pigeon-39556.upstash.io'),
       port: parseInt(this.configService.get('REDIS_PORT', '6379')),
-      password: this.configService.get('REDIS_PASSWORD') || undefined,
+      password: this.configService.get('REDIS_PASSWORD', 'AZqEAAIncDEyMzc4N2M3M2NlNWU0MjVkYmZiODExZDlkYzU5ZTcxMnAxMzk1NTY'),
       tls: {}, // Necessário para conexão segura com Upstash
     });
   }
