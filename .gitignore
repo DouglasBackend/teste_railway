@@ -45,3 +45,7 @@ MANIFEST
 # Miscellaneous
 cookies.txt
 nest-cli.json
+
+*.zip
+*.rar
+

@@ -1,7 +1,7 @@
 {
-  "name": "viralcuts-backend",
+  "name": "kurt-cut-backend",
   "version": "2.0.0",
-  "description": "ViralCuts SaaS - Multi-tenant Backend",
+  "description": "Kurt Cut 5.0 - Multi-tenant Backend",
   "main": "dist/main.js",
   "scripts": {
     "build": "nest build",
@@ -62,7 +62,8 @@
     "socket.io": "^4.7.0",
     "stripe": "^17.7.0",
     "typeorm": "^0.3.17",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "yt-dlp-exec": "^1.0.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

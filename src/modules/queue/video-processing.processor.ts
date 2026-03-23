@@ -68,16 +68,17 @@ export class VideoProcessingProcessor {
       } catch { /* keep original */ }
 
       const cookiesPath = path.join(process.cwd(), 'cookies.txt');
-      const cookiesFlag = fs.existsSync(cookiesPath) ? `--cookies "${cookiesPath}"` : '';
+      const hasCookies = fs.existsSync(cookiesPath);
       const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
-      await new Promise<void>((resolve, reject) => {
-        const format = 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best';
-        const command = `yt-dlp --no-playlist --retries 3 ${cookiesFlag} --user-agent "${userAgent}" -f "${format}" -o "${videoPath}" "${cleanUrl}"`;
-        exec(command, { timeout: 600000 }, (error) => {
-          if (error) return reject(error);
-          resolve();
-        });
+      const ytDlp = require('yt-dlp-exec');
+      await ytDlp(cleanUrl, {
+        noPlaylist: true,
+        retries: 3,
+        cookies: hasCookies ? cookiesPath : undefined,
+        userAgent: userAgent,
+        format: 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best',
+        output: videoPath,
       });
 
       if (!fs.existsSync(videoPath)) throw new Error('Download failed');
