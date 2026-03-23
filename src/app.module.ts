@@ -49,6 +49,8 @@ import { TenantModule } from './modules/tenant/tenant.module';
           host: config.get('REDIS_HOST', 'localhost'),
           port: parseInt(config.get('REDIS_PORT', '6379')),
           password: config.get('REDIS_PASSWORD') || undefined,
+          tls: {}, // Necessário para Upstash/Redis Seguro
+          maxRetriesPerRequest: null, // Recomendado para Bull/BullMQ
         },
       }),
       inject: [ConfigService],
