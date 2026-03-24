@@ -72,6 +72,9 @@ export class VideoProcessingProcessor {
       const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
       const ytDlp = require('yt-dlp-exec');
+      const binPath = path.join(process.cwd(), 'node_modules', 'yt-dlp-exec', 'bin', 'yt-dlp');
+      this.logger.log(`[${videoId}] yt-dlp Path: ${binPath} (Exists: ${fs.existsSync(binPath)})`);
+
       await ytDlp(cleanUrl, {
         noPlaylist: true,
         retries: 3,

@@ -11,7 +11,7 @@
     "seed": "ts-node -r tsconfig-paths/register src/database/seed.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "jest",
-    "postinstall": "node node_modules/yt-dlp-exec/scripts/postinstall.js"
+    "postinstall": "node scripts/fix-ytdlp.js"
   },
   "dependencies": {
     "@bull-board/api": "^6.7.2",
