@@ -18,6 +18,7 @@ import { EventsGateway } from '../gateway/events.gateway';
 import { exec } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
+const ffmpegPath = require('ffmpeg-static');
 
 import { 
   VIDEO_QUEUE, 
@@ -74,6 +75,7 @@ export class VideoProcessingProcessor {
       const ytDlp = require('yt-dlp-exec');
       const binPath = path.join(process.cwd(), 'node_modules', 'yt-dlp-exec', 'bin', 'yt-dlp');
       this.logger.log(`[${videoId}] yt-dlp Path: ${binPath} (Exists: ${fs.existsSync(binPath)})`);
+      this.logger.log(`[${videoId}] Using static FFmpeg: ${ffmpegPath}`);
 
       await ytDlp(cleanUrl, {
         noPlaylist: true,
@@ -82,6 +84,8 @@ export class VideoProcessingProcessor {
         userAgent: userAgent,
         format: 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best',
         output: videoPath,
+        jsRuntimes: 'node',
+        ffmpegLocation: ffmpegPath,
       });
 
       if (!fs.existsSync(videoPath)) throw new Error('Download failed');

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as path from 'path';
+const ffmpegPath = require('ffmpeg-static');
 
 @Injectable()
 export class RemotionRendererService {
@@ -139,6 +140,8 @@ export class RemotionRendererService {
             chromiumOptions: {
               disableWebSecurity: true,
             },
+            // @ts-ignore
+            ffmpegExecutable: ffmpegPath,
             onProgress: ({ renderedFrames, encodedFrames }: any) => {
               if (renderedFrames % 15 === 0 || renderedFrames === durationInFrames) {
                 this.logger.log(`Remotion Progress: Rendered ${renderedFrames} / ${durationInFrames} frames`);

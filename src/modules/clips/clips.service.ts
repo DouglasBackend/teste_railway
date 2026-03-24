@@ -15,6 +15,7 @@ import { promisify } from 'util';
 import * as path from 'path';
 import * as fs from 'fs';
 import { TenantDbManager } from '../tenant/tenant-db.manager';
+const ffmpegPath = require('ffmpeg-static');
 
 const execAsync = promisify(exec);
 
@@ -117,7 +118,7 @@ export class ClipsService {
     try {
       const seekTime = clip.tempo_inicio + 0.1;
       await execAsync(
-        `ffmpeg -ss ${seekTime} -i "${videoPath}" -vframes 1 -q:v 4 -y "${thumbPath}"`,
+        `"${ffmpegPath}" -ss ${seekTime} -i "${videoPath}" -vframes 1 -q:v 4 -y "${thumbPath}"`,
       );
       if (fs.existsSync(thumbPath)) {
         await clipsRepo.update(clipId, { miniatura_caminho: thumbPath });
@@ -243,7 +244,7 @@ export class ClipsService {
       const inputPath = path.isAbsolute(inputFile) ? inputFile : path.resolve(process.cwd(), inputFile);
 
       // ── Step 1: FFmpeg — Cut raw segment ─────────────────────────
-      const cutCmd = `ffmpeg -y -loglevel error -ss ${clip.tempo_inicio} -to ${clip.tempo_fim} -i "${inputPath}" -c copy -sn "${tempCut}"`;
+      const cutCmd = `"${ffmpegPath}" -y -loglevel error -ss ${clip.tempo_inicio} -to ${clip.tempo_fim} -i "${inputPath}" -c copy -sn "${tempCut}"`;
       await execAsync(cutCmd, { timeout: 120000 });
       this.eventsGateway.emitClipExportProgress(clipId, clip.video_id, 25);
 
@@ -264,7 +265,7 @@ export class ClipsService {
       const mapArgs = `-map "${finalVLabelArg}" -map 0:a? -sn`;
 
       const encodeCmd = [
-        'ffmpeg', '-y', '-loglevel', 'error',
+        `"${ffmpegPath}"`, '-y', '-loglevel', 'error',
         `-i "${tempCut}"`,
         filterArgs, mapArgs,
         '-c:v libx264 -profile:v high -level 4.1',
