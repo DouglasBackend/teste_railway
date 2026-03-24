@@ -33,6 +33,9 @@ import { TenantModule } from './modules/tenant/tenant.module';
         const dbName = config.get('GLOBAL_DB_NAME');
 
         console.log(`[Database] Connecting to ${host} as ${user} (DB: ${dbName})`);
+        if (!user || user === 'postgres') {
+          console.warn(`[Database] WARNING: GLOBAL_DB_USER is "${user}". This might be a mistake if you are using Supabase.`);
+        }
 
         return {
           type: 'postgres',

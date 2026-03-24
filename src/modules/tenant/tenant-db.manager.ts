@@ -35,6 +35,8 @@ export class TenantDbManager implements OnModuleDestroy {
       const password = this.configService.get<string>('GLOBAL_DB_PASS')!;
       const isProd = this.configService.get('NODE_ENV') === 'production';
 
+      console.log(`[TenantManager] Connecting to ${host}:${port} as ${username} to create DB: ${dbName}`);
+
       // ── Auto-create tenant database if it doesn't exist ──────────────────
       const adminDs = new DataSource({
         type: 'postgres',
