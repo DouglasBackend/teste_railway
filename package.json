@@ -10,7 +10,8 @@
     "start:prod": "node dist/main",
     "seed": "ts-node -r tsconfig-paths/register src/database/seed.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "npx yt-dlp-exec --download"
   },
   "dependencies": {
     "@bull-board/api": "^6.7.2",
