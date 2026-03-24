@@ -28,26 +28,26 @@ import { TenantModule } from './modules/tenant/tenant.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => {
-        const host = config.get('GLOBAL_DB_HOST', 'aws-1-us-east-1.pooler.supabase.com');
-        const user = config.get('GLOBAL_DB_USER', 'postgres.pkjfuvoexlwigqjuzjmk');
-        const dbName = config.get('GLOBAL_DB_NAME', 'postgres');
+        const host = config.get('GLOBAL_DB_HOST');
+        const user = config.get('GLOBAL_DB_USER');
+        const dbName = config.get('GLOBAL_DB_NAME');
 
         console.log(`[Database] Connecting to ${host} as ${user} (DB: ${dbName})`);
 
         return {
           type: 'postgres',
           host,
-          port: parseInt(config.get('GLOBAL_DB_PORT', '5432')),
+          port: parseInt(config.get('GLOBAL_DB_PORT') || '5432'),
           username: user,
-          password: config.get('GLOBAL_DB_PASS', 'J98jPeSRKMJusHF@'),
+          password: config.get('GLOBAL_DB_PASS'),
           database: dbName,
           entities: [Usuario],
           synchronize: true,
           logging: false,
-          ssl: config.get('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
-          extra: config.get('NODE_ENV') === 'production' ? {
+          ssl: { rejectUnauthorized: false },
+          extra: {
             ssl: { rejectUnauthorized: false },
-          } : {},
+          },
         };
       },
       inject: [ConfigService],

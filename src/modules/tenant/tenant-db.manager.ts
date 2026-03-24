@@ -13,7 +13,7 @@ export class TenantDbManager implements OnModuleDestroy {
   private dataSources = new Map<string, DataSource>();
   private initPromises = new Map<string, Promise<DataSource>>();
 
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService) { }
 
   async getTenantDataSource(usuarioId: string): Promise<DataSource> {
     const secret = this.configService.get<string>('SECRET_TENANT', 'kurt_');
@@ -29,10 +29,10 @@ export class TenantDbManager implements OnModuleDestroy {
     }
 
     const initPromise = (async () => {
-      const host = this.configService.get<string>('GLOBAL_DB_HOST', 'aws-1-us-east-1.pooler.supabase.com');
-      const port = parseInt(this.configService.get<string>('GLOBAL_DB_PORT', '5432'));
-      const username = this.configService.get<string>('GLOBAL_DB_USER', 'postgres.pkjfuvoexlwigqjuzjmk');
-      const password = this.configService.get<string>('GLOBAL_DB_PASS', 'J98jPeSRKMJusHF@');
+      const host = this.configService.get<string>('GLOBAL_DB_HOST')!;
+      const port = parseInt(this.configService.get<string>('GLOBAL_DB_PORT') || '5432');
+      const username = this.configService.get<string>('GLOBAL_DB_USER')!;
+      const password = this.configService.get<string>('GLOBAL_DB_PASS')!;
       const isProd = this.configService.get('NODE_ENV') === 'production';
 
       // ── Auto-create tenant database if it doesn't exist ──────────────────
@@ -43,8 +43,8 @@ export class TenantDbManager implements OnModuleDestroy {
         username,
         password,
         database: 'postgres',
-        ssl: isProd ? { rejectUnauthorized: false } : false,
-        extra: isProd ? { ssl: { rejectUnauthorized: false } } : {},
+        ssl: { rejectUnauthorized: false },
+        extra: { ssl: { rejectUnauthorized: false } },
       });
 
       try {
@@ -69,8 +69,8 @@ export class TenantDbManager implements OnModuleDestroy {
         database: dbName,
         entities: [Projeto, Video, Corte, Legenda, ContaYoutube],
         synchronize: true,
-        ssl: isProd ? { rejectUnauthorized: false } : false,
-        extra: isProd ? { ssl: { rejectUnauthorized: false } } : {},
+        ssl: { rejectUnauthorized: false },
+        extra: { ssl: { rejectUnauthorized: false } },
       });
 
       await dataSource.initialize();
